@@ -15,7 +15,7 @@ embed = Embed(
     description='',
     color=16749644
     )
-embed.add_field(name=message,  value=current_time)
+embed.add_field(name=message,  value='All Good Now')
 
 while True:
     t = time.localtime()
