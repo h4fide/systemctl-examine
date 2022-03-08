@@ -1,0 +1,4 @@
+{
+    "webhook": "YOUR_DISCORD_WEBHOOK",
+    "sudo_password": "SUDO_PASSWORD"
+}
