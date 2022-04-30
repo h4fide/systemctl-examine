@@ -1,32 +1,57 @@
 import os
+from time import sleep
 import time
-from subprocess import run
 import json
 import re
-from dhooks import Webhook, File, Embed
-#discord
-message = "Application Stopped \nWill Be Back Now"
-with open('data.json', encoding='utf-8') as json_data:
-    data = json.load(json_data)
-sudo_password = data['sudo_password']
-webhook = data['webhook']
-hook = Webhook(webhook)
-embed = Embed(
-    description='',
-    color=16749644
-    )
-embed.add_field(name=message,  value='All Good Now')
+from pushbullet import PushBullet
 
-while True:
+with open('auth.json') as data:
+    data = json.load(data)
+    pushbullet_token = data['pushbullet_token']
+    sudopass = data['sudopass']
+    
+service = "shadowsocks-libev.service"
+t = time.localtime()
+pb = PushBullet(pushbullet_token)
+
+def ctime():
     t = time.localtime()
     current_time = time.strftime("%H:%M:%S", t)
-    command = 'sudo systemctl start application.service'
-    a  = os.popen('systemctl status application.service').readlines()
+    return current_time
+
+def status():
+    a  = os.popen('systemctl status '+service).readlines()
     a = str(a)
-    match = re.search(r'\b(running)\b',a)
-    if match:
-        time.sleep(3)
+    return a
+
+cstart = 'sudo systemctl start '+service
+cstop = 'sudo systemctl stop '+service
+crestart = 'sudo systemctl restart '+service
+wait1s= sleep(1)
+
+while True:
+    running = re.search(r'\b(running)\b',status())
+    wait1s
+    failed = re.search(r'\b(failed)\b',status())
+    wait1s
+    stop = re.search(r'\b(inactive)\b',status())
+    wait1s
+    
+    if running:
+        print ("Running")
+        time.sleep(600) # 10 minutes
+    elif failed:
+        failedmes="Failed at " + ctime()+ '\nWill Be Starting Soon'
+        push = pb.push_note("Skit Server", failedmes)
+        sleep(2)
+        p = os.system('echo %s|sudo -S %s' % (sudopass, crestart))
+    elif stop:
+        stopmes="Stop at " + ctime()+ '\nWill Be Starting Soon'
+        push = pb.push_note("Skit Server", stopmes)
+        sleep(2)
+        p = os.system('echo %s|sudo -S %s' % (sudopass, crestart))
     else:
-        print ("Faild at " + current_time)
-        hook.send('ALERT :exclamation: ', embed=embed)
-        p = os.system('echo %s|sudo -S %s' % (sudo_password, command))
+        unknownmes="Unknown Error at " + ctime()+ '\nWill Be Starting Soon'
+        push = pb.push_note("Skit Server", unknownmes)
+        sleep(2)
+        p = os.system('echo %s|sudo -S %s' % (sudopass, crestart))
