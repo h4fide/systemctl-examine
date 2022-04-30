@@ -56,16 +56,16 @@ while True:
         time.sleep(600) # 10 minutes
     elif failed:
         failedmes="Failed at " + ctime()+ '\nWill Be Starting Soon'
-        push = pb.push_note("Skit Server", failedmes)
+        push = pb.push_note("My Server", failedmes)
         sleep(2)
         p = os.system('echo %s|sudo -S %s' % (sudopasswd, crestart))
     elif stop:
         stopmes="Stop at " + ctime()+ '\nWill Be Starting Soon'
-        push = pb.push_note("Skit Server", stopmes)
+        push = pb.push_note("My Server", stopmes)
         sleep(2)
         p = os.system('echo %s|sudo -S %s' % (sudopasswd, crestart))
     else:
         unknownmes="Unknown Error at " + ctime()+ '\nWill Be Starting Soon'
-        push = pb.push_note("Skit Server", unknownmes)
+        push = pb.push_note("My Server", unknownmes)
         sleep(2)
         p = os.system('echo %s|sudo -S %s' % (sudopasswd, crestart))
