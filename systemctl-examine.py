@@ -8,7 +8,7 @@ from pushbullet import PushBullet
 with open('auth.json') as data:
     data = json.load(data)
     pushbullet_token = data['pushbullet_token']
-    sudopass = data['sudopass']
+    sudopasswd = data['sudo_password']
     
 service = "shadowsocks-libev.service"
 t = time.localtime()
@@ -44,14 +44,14 @@ while True:
         failedmes="Failed at " + ctime()+ '\nWill Be Starting Soon'
         push = pb.push_note("Skit Server", failedmes)
         sleep(2)
-        p = os.system('echo %s|sudo -S %s' % (sudopass, crestart))
+        p = os.system('echo %s|sudo -S %s' % (sudopasswd, crestart))
     elif stop:
         stopmes="Stop at " + ctime()+ '\nWill Be Starting Soon'
         push = pb.push_note("Skit Server", stopmes)
         sleep(2)
-        p = os.system('echo %s|sudo -S %s' % (sudopass, crestart))
+        p = os.system('echo %s|sudo -S %s' % (sudopasswd, crestart))
     else:
         unknownmes="Unknown Error at " + ctime()+ '\nWill Be Starting Soon'
         push = pb.push_note("Skit Server", unknownmes)
         sleep(2)
-        p = os.system('echo %s|sudo -S %s' % (sudopass, crestart))
+        p = os.system('echo %s|sudo -S %s' % (sudopasswd, crestart))
