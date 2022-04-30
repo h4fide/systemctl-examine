@@ -1,16 +1,31 @@
-import os
-from time import sleep
-import time
-import json
-import re
-from pushbullet import PushBullet
+try:
+    import os
+    import sys
+    from time import sleep
+    import time
+    import re
+    from auth import pushbullet_token, sudopass
+except ImportError as e: 
+    print('You need to install missing libraries\n')
+    sys.exit(e)
+    
 
+try:
+    from pushbullet import PushBullet
+except ImportError as e:
+    print('Required Pushpullet Library - !Not installed!')
+    u_input = input(' Hit [Enter] to install Pushbullet ')
+    if u_input == '':
+        os.system("pip install pushbullet.py")
+    else:
+        sys.exit('Abandon!')
+  
 with open('auth.json') as data:
     data = json.load(data)
     pushbullet_token = data['pushbullet_token']
     sudopasswd = data['sudo_password']
     
-service = "shadowsocks-libev.service"
+service = "shadowsocks-libev.service" # choose systemctl service
 t = time.localtime()
 pb = PushBullet(pushbullet_token)
 
@@ -27,15 +42,14 @@ def status():
 cstart = 'sudo systemctl start '+service
 cstop = 'sudo systemctl stop '+service
 crestart = 'sudo systemctl restart '+service
-wait1s= sleep(1)
 
 while True:
     running = re.search(r'\b(running)\b',status())
-    wait1s
+    sleep(1)
     failed = re.search(r'\b(failed)\b',status())
-    wait1s
+    sleep(1)
     stop = re.search(r'\b(inactive)\b',status())
-    wait1s
+    sleep(1)
     
     if running:
         print ("Running")
